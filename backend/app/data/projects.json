@@ -1,0 +1,174 @@
+{
+  "projects": [
+    {
+      "id": "web-dev-001",
+      "title": "电商平台",
+      "slug": "ecommerce-platform",
+      "short_description": "基于 FastAPI 的全栈电商解决方案，支持支付集成",
+      "description": "## 项目概述\n\n一个完整的电商平台，采用 FastAPI 作为后端，React 作为前端。\n\n## 主要功能\n\n- 用户认证与授权（JWT）\n- 商品目录管理\n- 购物车功能\n- Stripe 支付集成\n- 订单管理系统\n- 管理员后台\n\n## 技术栈\n\n- **后端**: FastAPI, PostgreSQL, Redis, Stripe\n- **前端**: React, Tailwind CSS\n- **部署**: Docker, Nginx",
+      "category": "web_development",
+      "technologies": ["FastAPI", "React", "PostgreSQL", "Stripe", "Redis", "Docker"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/ecommerce", "icon": "github"}
+      ],
+      "featured": true,
+      "status": "completed",
+      "highlights": [
+        "集成 Stripe 支付处理",
+        "实现 JWT 认证系统",
+        "构建响应式 React 前端",
+        "Docker 容器化部署"
+      ]
+    },
+    {
+      "id": "web-dev-002",
+      "title": "任务管理系统",
+      "slug": "task-manager",
+      "short_description": "团队协作任务管理应用，支持实时更新",
+      "description": "## 项目概述\n\n一个支持多人协作的任务管理应用，类似于 Trello 的功能。\n\n## 主要功能\n\n- 看板式任务管理\n- 拖拽排序\n- 实时协作（WebSocket）\n- 团队成员管理\n- 任务评论和附件\n\n## 技术栈\n\n- **后端**: FastAPI, WebSocket, SQLAlchemy\n- **前端**: Next.js, dnd-kit\n- **数据库**: PostgreSQL",
+      "category": "web_development",
+      "technologies": ["FastAPI", "Next.js", "WebSocket", "PostgreSQL", "SQLAlchemy"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/task-manager", "icon": "github"},
+        {"title": "在线演示", "url": "https://tasks.example.com", "icon": "external-link"}
+      ],
+      "featured": true,
+      "status": "completed",
+      "highlights": [
+        "WebSocket 实时通信",
+        "拖拽式看板界面",
+        "团队权限管理"
+      ]
+    },
+    {
+      "id": "scraping-001",
+      "title": "房产数据爬虫",
+      "slug": "real-estate-scraper",
+      "short_description": "自动化爬取多个房产网站数据并导出",
+      "description": "## 项目概述\n\n强大的网络爬虫系统，可从多个房产网站收集数据。\n\n## 主要功能\n\n- 多网站爬取（链家、贝壳等）\n- 反爬虫策略处理\n- 数据清洗和验证\n- 导出为 CSV/Excel/数据库\n- 定时任务调度\n\n## 技术栈\n\n- **爬虫**: Scrapy, Selenium, BeautifulSoup4\n- **数据处理**: Pandas, NumPy\n- **存储**: SQLite, CSV\n- **调度**: APScheduler",
+      "category": "web_scraping",
+      "technologies": ["Python", "Scrapy", "Selenium", "BeautifulSoup4", "Pandas", "APScheduler"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/real-estate-scraper", "icon": "github"}
+      ],
+      "featured": true,
+      "status": "in_progress",
+      "highlights": [
+        "爬取 5+ 个房产网站",
+        "支持导出 CSV/数据库",
+        "定时任务自动运行"
+      ]
+    },
+    {
+      "id": "scraping-002",
+      "title": "新闻聚合器",
+      "slug": "news-aggregator",
+      "short_description": "聚合多个新闻源的数据并分类展示",
+      "description": "## 项目概述\n\n新闻聚合爬虫，从各大新闻网站抓取最新资讯并自动分类。\n\n## 主要功能\n\n- 多源新闻抓取\n- 自动分类（基于关键词）\n- 去重处理\n- API 接口提供数据\n\n## 技术栈\n\n- Scrapy, Redis, FastAPI",
+      "category": "web_scraping",
+      "technologies": ["Python", "Scrapy", "Redis", "FastAPI"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/news-aggregator", "icon": "github"}
+      ],
+      "featured": false,
+      "status": "completed",
+      "highlights": [
+        "实时新闻抓取",
+        "智能分类算法"
+      ]
+    },
+    {
+      "id": "data-001",
+      "title": "销售数据分析仪表板",
+      "slug": "sales-dashboard",
+      "short_description": "电商销售数据可视化分析平台",
+      "description": "## 项目概述\n\n销售数据分析仪表板，提供多维度数据可视化。\n\n## 主要功能\n\n- 数据导入（Excel/CSV）\n- 多维度统计分析\n- 交互式图表\n- 报告导出\n\n## 技术栈\n\n- **分析**: Pandas, NumPy\n- **可视化**: Plotly, Dash\n- **存储**: SQLite",
+      "category": "data_analysis",
+      "technologies": ["Python", "Pandas", "NumPy", "Plotly", "Dash", "SQLite"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/sales-dashboard", "icon": "github"}
+      ],
+      "featured": true,
+      "status": "completed",
+      "highlights": [
+        "交互式数据可视化",
+        "支持多格式数据导入",
+        "自动生成报告"
+      ]
+    },
+    {
+      "id": "automation-001",
+      "title": "文件自动整理工具",
+      "slug": "file-organizer",
+      "short_description": "自动按类型整理下载文件夹的脚本",
+      "description": "## 项目概述\n\n自动化脚本，监控下载文件夹并按文件类型自动整理。\n\n## 主要功能\n\n- 监控文件夹变化\n- 自动分类文件\n- 支持自定义规则\n- 定时清理旧文件\n\n## 技术栈\n\n- Python, watchdog",
+      "category": "automation",
+      "technologies": ["Python", "watchdog", "shutil"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/file-organizer", "icon": "github"}
+      ],
+      "featured": false,
+      "status": "completed",
+      "highlights": [
+        "实时文件监控",
+        "可配置分类规则"
+      ]
+    },
+    {
+      "id": "automation-002",
+      "title": "邮件自动化处理",
+      "slug": "email-automation",
+      "short_description": "自动分类、回复和归档邮件的工具",
+      "description": "## 项目概述\n\n智能邮件处理工具，可自动分类和回复常见邮件。\n\n## 主要功能\n\n- 邮件自动分类\n- 模板回复\n- 附件自动保存\n- 定时提醒\n\n## 技术栈\n\n- Python, IMAP, SMTP",
+      "category": "automation",
+      "technologies": ["Python", "IMAP", "SMTP", "OpenAI API"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/email-automation", "icon": "github"}
+      ],
+      "featured": false,
+      "status": "in_progress",
+      "highlights": [
+        "AI 辅助邮件回复",
+        "智能分类算法"
+      ]
+    },
+    {
+      "id": "ml-001",
+      "title": "股价预测模型",
+      "slug": "stock-prediction",
+      "short_description": "基于机器学习的股票价格预测系统",
+      "description": "## 项目概述\n\n使用 LSTM 神经网络预测股票价格走势。\n\n## 主要功能\n\n- 历史数据获取\n- 特征工程\n- 模型训练\n- 预测可视化\n\n## 技术栈\n\n- **ML**: TensorFlow, scikit-learn\n- **数据**: yfinance, Pandas\n- **可视化**: Matplotlib",
+      "category": "machine_learning",
+      "technologies": ["Python", "TensorFlow", "scikit-learn", "yfinance", "Pandas"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/stock-prediction", "icon": "github"}
+      ],
+      "featured": true,
+      "status": "completed",
+      "highlights": [
+        "LSTM 深度学习模型",
+        "实时数据获取",
+        "预测结果可视化"
+      ]
+    },
+    {
+      "id": "api-001",
+      "title": "RESTful API 服务",
+      "slug": "rest-api-service",
+      "short_description": "通用 RESTful API 服务框架",
+      "description": "## 项目概述\n\n一个功能完整的 RESTful API 服务框架，可快速搭建 API。\n\n## 主要功能\n\n- JWT 认证\n- 速率限制\n- 请求日志\n- API 文档自动生成\n\n## 技术栈\n\n- FastAPI, Pydantic, SQLAlchemy",
+      "category": "api_development",
+      "technologies": ["FastAPI", "Pydantic", "SQLAlchemy", "JWT", "Redis"],
+      "links": [
+        {"title": "GitHub", "url": "https://github.com/user/rest-api", "icon": "github"}
+      ],
+      "featured": false,
+      "status": "completed",
+      "highlights": [
+        "完整的认证系统",
+        "自动 API 文档",
+        "生产就绪"
+      ]
+    }
+  ]
+}
