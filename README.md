@@ -156,16 +156,14 @@ MONGODB_DATABASE=portfolio
 
 ## 部署
 
-### 后端部署选项
-- Railway
-- Render
-- Fly.io
-- DigitalOcean App Platform
+- **前端**：部署到 [Vercel](https://vercel.com)（推荐）
+- **后端**：使用 Docker 部署到自有服务器
 
-### 前端部署选项
-- Vercel (推荐)
-- Netlify
-- Railway
+详细步骤见 [DEPLOY.md](DEPLOY.md)，包括：
+- 后端 Dockerfile 构建与运行
+- 环境变量配置
+- Vercel 部署与 `NEXT_PUBLIC_API_URL` 设置
+- 前后端联调验证清单
 
 ## 许可证
 
