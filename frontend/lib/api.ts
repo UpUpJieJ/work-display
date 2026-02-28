@@ -5,12 +5,14 @@
 
 import {
   fetchProjects,
+  fetchProject,
   fetchProjectBySlug,
   fetchProjectCategories,
   fetchSkills,
   fetchSkillsGrouped,
   fetchProfile,
   submitContact,
+  submitContactForm,
   ContactFormData,
   Project,
   ProjectCategoryInfo,
@@ -30,7 +32,7 @@ export type {
 };
 
 // Project API
-export { fetchProjects, fetchProjectBySlug, fetchProjectCategories };
+export { fetchProjects, fetchProject, fetchProjectBySlug, fetchProjectCategories };
 
 // Skill API
 export { fetchSkills, fetchSkillsGrouped };
@@ -39,4 +41,4 @@ export { fetchSkills, fetchSkillsGrouped };
 export { fetchProfile };
 
 // Contact API
-export { submitContact };
+export { submitContact, submitContactForm };

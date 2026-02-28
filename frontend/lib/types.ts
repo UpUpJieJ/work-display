@@ -163,12 +163,19 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
 }
 
 // Project API
-export async function fetchProjects(category?: string): Promise<Project[]> {
-  const params = category ? `?category=${category}` : '';
-  return fetchAPI<Project[]>(`/api/projects${params}`);
+export async function fetchProjects(category?: string, featured?: boolean): Promise<Project[]> {
+  const params = new URLSearchParams();
+  if (category) params.append('category', category);
+  if (featured) params.append('featured', 'true');
+  const query = params.toString();
+  return fetchAPI<Project[]>(`/api/projects${query ? `?${query}` : ''}`);
 }
 
-export async function fetchProjectBySlug(slug: string): Promise<Project> {
+export async function fetchProject(slug: string): Promise<Project | null> {
+  return fetchAPI<Project>(`/api/projects/${slug}`);
+}
+
+export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
   return fetchAPI<Project>(`/api/projects/${slug}`);
 }
 
@@ -177,8 +184,12 @@ export async function fetchProjectCategories(): Promise<ProjectCategoryInfo[]> {
 }
 
 // Skill API
-export async function fetchSkills(): Promise<Skill[]> {
-  return fetchAPI<Skill[]>('/api/skills');
+export async function fetchSkills(category?: string, featured?: boolean): Promise<Skill[]> {
+  const params = new URLSearchParams();
+  if (category) params.append('category', category);
+  if (featured) params.append('featured', 'true');
+  const query = params.toString();
+  return fetchAPI<Skill[]>(`/api/skills${query ? `?${query}` : ''}`);
 }
 
 export async function fetchSkillsGrouped(): Promise<SkillGroup[]> {
@@ -192,6 +203,13 @@ export async function fetchProfile(): Promise<Profile> {
 
 // Contact API
 export async function submitContact(data: ContactFormData): Promise<void> {
+  return fetchAPI<void>('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function submitContactForm(data: ContactFormData): Promise<void> {
   return fetchAPI<void>('/api/contact', {
     method: 'POST',
     body: JSON.stringify(data),
