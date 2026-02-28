@@ -60,7 +60,7 @@ export default async function ContactPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-4">社交媒体</h2>
                 <div className="space-y-3">
-                  {profile.social_links.map((link) => {
+                  {profile.social_links.map((link: any) => {
                     const Icon =
                       link.icon === 'github'
                         ? Github

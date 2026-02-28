@@ -8,13 +8,13 @@ import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const project = await fetchProject(slug);
 
   if (!project) {
@@ -92,7 +92,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         {/* Links */}
         {project.links.length > 0 && (
           <div className="flex flex-wrap gap-4 mb-8">
-            {project.links.map((link) => (
+            {project.links.map((link: any) => (
               <a
                 key={link.url}
                 href={link.url}
@@ -115,7 +115,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-3">技术栈</h2>
           <div className="flex flex-wrap gap-2">
-            {project.technologies.map((tech) => (
+            {project.technologies.map((tech: string) => (
               <span
                 key={tech}
                 className="px-3 py-1 bg-muted text-muted-foreground rounded-md text-sm"
@@ -139,7 +139,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-3">项目亮点</h2>
             <ul className="space-y-2">
-              {project.highlights.map((highlight, index) => (
+              {project.highlights.map((highlight: string, index: number) => (
                 <li
                   key={index}
                   className="flex items-start gap-2 text-muted-foreground"
@@ -157,7 +157,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-4">相关项目</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {relatedProjects.map((relatedProject) => (
+              {relatedProjects.map((relatedProject: any) => (
                 <Link
                   key={relatedProject.id}
                   href={`/projects/${relatedProject.slug}`}

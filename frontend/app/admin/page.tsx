@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
     },
     {
       name: "精选项目",
-      value: projects.filter((p) => p.featured).length,
+      value: projects.filter((p: any) => p.featured).length,
       href: "/admin/projects",
       icon: Activity,
       color: "bg-green-500",
