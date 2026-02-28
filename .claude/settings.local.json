@@ -4,7 +4,8 @@
       "Bash(test -f f:/works_display/backend/README.md)",
       "Bash(uv sync)",
       "Bash(uv add \"python-jose[cryptography]\" \"passlib[bcrypt]\" python-multipart)",
-      "Bash(uv run python -c \":*)"
+      "Bash(uv run python -c \":*)",
+      "Bash(npm run build)"
     ]
   }
 }
