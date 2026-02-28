@@ -14,11 +14,7 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: false,
-  },
-  // Use dynamic rendering instead of static generation
-  experimental: {
-    dynamicIO: true,
-  },
+  }
 }
 
 module.exports = nextConfig
