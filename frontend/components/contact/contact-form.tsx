@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { submitContactForm } from '@/lib/api';
-import { Mail, Message, Send, User } from 'lucide-react';
+import { Mail, MessageSquare, Send, User } from 'lucide-react';
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -113,7 +113,7 @@ export function ContactForm() {
             消息
           </label>
           <div className="relative">
-            <Message className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
+            <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
             <textarea
               id="message"
               name="message"

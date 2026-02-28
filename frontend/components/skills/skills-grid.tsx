@@ -10,6 +10,7 @@ interface SkillsGridProps {
   skills: Skill[];
   grouped?: boolean;
   groups?: SkillGroup[];
+  compact?: boolean;
 }
 
 const proficiencyColors = {
@@ -28,7 +29,9 @@ const proficiencyNames = {
   learning: '学习中',
 };
 
-export function SkillsGrid({ skills, grouped = false, groups }: SkillsGridProps) {
+export function SkillsGrid({ skills, grouped = false, groups, compact = false }: SkillsGridProps) {
+  const gridCols = compact ? "grid-cols-2" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+
   if (grouped && groups) {
     return (
       <div className="space-y-8">
@@ -37,7 +40,7 @@ export function SkillsGrid({ skills, grouped = false, groups }: SkillsGridProps)
             <h3 className="text-lg font-semibold mb-4 text-foreground">
               {group.category_name}
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className={cn("grid gap-4", gridCols)}>
               {group.skills.map((skill) => (
                 <SkillCard key={skill.name} skill={skill} />
               ))}
@@ -49,7 +52,7 @@ export function SkillsGrid({ skills, grouped = false, groups }: SkillsGridProps)
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className={cn("grid gap-4", gridCols)}>
       {skills.map((skill) => (
         <SkillCard key={skill.name} skill={skill} />
       ))}

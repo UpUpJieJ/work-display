@@ -4,7 +4,8 @@
 import { fetchProject, fetchProjects } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, ExternalLink, Github } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface ProjectPageProps {
   params: {
@@ -13,7 +14,8 @@ interface ProjectPageProps {
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const project = await fetchProject(params.slug);
+  const { slug } = params;
+  const project = await fetchProject(slug);
 
   if (!project) {
     notFound();
@@ -37,6 +39,28 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return names[category] || category;
   };
 
+  const getStatusName = (status: string) => {
+    const names: Record<string, string> = {
+      completed: '已完成',
+      in_progress: '进行中',
+      planned: '计划中',
+      maintaining: '维护中',
+      archived: '已归档',
+    };
+    return names[status] || status;
+  };
+
+  const getStatusClass = (status: string) => {
+    const classes: Record<string, string> = {
+      completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+      in_progress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+      planned: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
+      maintaining: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+      archived: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+    };
+    return classes[status] || classes.completed;
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -55,11 +79,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
               {getCategoryName(project.category)}
             </span>
-            {project.status !== 'completed' && (
-              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                {project.status === 'in_progress' ? '进行中' : '计划中'}
-              </span>
-            )}
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusClass(project.status)}`}>
+              {getStatusName(project.status)}
+            </span>
           </div>
           <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
           <p className="text-xl text-muted-foreground">
@@ -108,28 +130,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-3">项目介绍</h2>
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            {project.description.split('\n\n').map((paragraph, index) => {
-              // Simple markdown parsing
-              if (paragraph.startsWith('## ')) {
-                return (
-                  <h3 key={index} className="text-xl font-semibold mt-6 mb-3">
-                    {paragraph.replace('## ', '')}
-                  </h3>
-                );
-              }
-              if (paragraph.startsWith('- ')) {
-                return (
-                  <ul key={index} className="list-disc pl-6 space-y-1">
-                    <li>{paragraph.replace('- ', '')}</li>
-                  </ul>
-                );
-              }
-              return (
-                <p key={index} className="text-muted-foreground leading-relaxed">
-                  {paragraph}
-                </p>
-              );
-            })}
+            <ReactMarkdown>{project.description}</ReactMarkdown>
           </div>
         </div>
 

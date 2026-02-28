@@ -1,66 +1,144 @@
 """
-Data Loader Service
-Loads data from JSON files
+Data Loader Service - MongoDB version
 """
-import json
-import os
-from pathlib import Path
-from typing import List, Dict, Any
-
-# Base data directory
-DATA_DIR = Path(__file__).parent.parent / "data"
+from typing import List, Dict, Any, Optional
+from app.database import get_db
 
 
-def load_json_data(filename: str) -> List[Dict[str, Any]]:
-    """
-    Load data from a JSON file in the data directory
+async def load_projects(
+    category: Optional[str] = None,
+    featured: Optional[bool] = None
+) -> List[Dict[str, Any]]:
+    """Load projects from MongoDB"""
+    db = get_db()
 
-    Args:
-        filename: Name of the JSON file
+    query = {}
+    if category:
+        query["category"] = category
+    if featured is not None:
+        query["featured"] = featured
 
-    Returns:
-        List of dictionaries containing the data
-    """
-    file_path = DATA_DIR / filename
+    cursor = db.projects.find(query)
+    projects = await cursor.to_list(length=None)
 
-    if not file_path.exists():
-        return []
+    # Remove MongoDB _id from results
+    for proj in projects:
+        if "_id" in proj:
+            del proj["_id"]
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return data
-
-
-async def load_projects() -> List[Dict[str, Any]]:
-    """Load all projects from projects.json"""
-    return load_json_data("projects.json").get("projects", [])
+    return projects
 
 
-async def load_skills() -> List[Dict[str, Any]]:
-    """Load all skills from skills.json"""
-    return load_json_data("skills.json").get("skills", [])
+async def load_skills(
+    category: Optional[str] = None,
+    featured: Optional[bool] = None
+) -> List[Dict[str, Any]]:
+    """Load skills from MongoDB"""
+    db = get_db()
+
+    query = {}
+    if category:
+        query["category"] = category
+    if featured is not None:
+        query["featured"] = featured
+
+    cursor = db.skills.find(query)
+    skills = await cursor.to_list(length=None)
+
+    # Remove MongoDB _id from results
+    for skill in skills:
+        if "_id" in skill:
+            del skill["_id"]
+
+    return skills
 
 
 async def load_profile() -> Dict[str, Any]:
-    """Load profile data from profile.json"""
-    return load_json_data("profile.json")
+    """Load profile from MongoDB"""
+    db = get_db()
+
+    profile = await db.profiles.find_one({})
+    if not profile:
+        # Return default profile when database is empty
+        return {
+            "name": "Your Name",
+            "title": "Your Title",
+            "tagline": "Your Tagline",
+            "bio": "Your bio goes here...",
+            "email": "",
+            "phone": "",
+            "location": "",
+            "avatar": None,
+            "resume_url": None,
+            "social_links": [],
+            "experience": [],
+            "education": []
+        }
+
+    # Remove MongoDB _id from result
+    if "_id" in profile:
+        del profile["_id"]
+
+    return profile
 
 
-def get_project_by_slug(slug: str) -> Dict[str, Any] | None:
-    """
-    Get a single project by its slug
+def get_project_by_slug(slug: str) -> Optional[Dict[str, Any]]:
+    """Synchronous wrapper for get_project_by_slug_async"""
+    import asyncio
+    return asyncio.run(get_project_by_slug_async(slug))
 
-    Args:
-        slug: Project slug
 
-    Returns:
-        Project data or None if not found
-    """
-    projects = load_json_data("projects.json").get("projects", [])
+async def get_project_by_slug_async(slug: str) -> Optional[Dict[str, Any]]:
+    """Get a single project by slug"""
+    db = get_db()
 
-    for project in projects:
-        if project.get("slug") == slug:
-            return project
+    project = await db.projects.find_one({"slug": slug})
+    if not project:
+        return None
 
-    return None
+    # Remove MongoDB _id from result
+    if "_id" in project:
+        del project["_id"]
+
+    return project
+
+
+async def load_skills_grouped() -> List[Dict[str, Any]]:
+    """Load skills grouped by category"""
+    db = get_db()
+
+    pipeline = [
+        {"$group": {
+            "_id": "$category",
+            "skills": {"$push": "$$ROOT"}
+        }}
+    ]
+
+    cursor = db.skills.aggregate(pipeline)
+    results = await cursor.to_list(length=None)
+
+    category_names = {
+        "languages": "编程语言",
+        "frameworks": "框架",
+        "databases": "数据库",
+        "tools": "工具",
+        "cloud_platforms": "云平台",
+        "concepts": "概念"
+    }
+
+    grouped = []
+    for result in results:
+        category = result["_id"]
+        skills = result["skills"]
+        # Remove _id from each skill
+        for skill in skills:
+            if "_id" in skill:
+                del skill["_id"]
+
+        grouped.append({
+            "category": category,
+            "category_name": category_names.get(category, category),
+            "skills": skills
+        })
+
+    return grouped

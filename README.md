@@ -11,8 +11,9 @@ f:/works_display/
 │   │   ├── main.py               # FastAPI 应用入口
 │   │   ├── models/               # Pydantic 数据模型
 │   │   ├── routers/              # API 路由
-│   │   ├── data/                 # 静态数据 (JSON)
 │   │   └── services/             # 业务逻辑
+│   ├── scripts/                  # 迁移脚本
+│   │   └── migrate_to_mongodb.py # JSON 转 MongoDB 迁移脚本
 │   ├── tests/                    # 测试文件
 │   └── requirements.txt          # Python 依赖
 │
@@ -104,13 +105,44 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## 数据管理
 
-项目数据以 JSON 格式存储在 `backend/app/data/` 目录：
+项目数据存储在 **MongoDB** 数据库中，包含以下集合：
 
-- `projects.json` - 项目数据
-- `skills.json` - 技能数据
-- `profile.json` - 个人资料
+- `projects` - 项目数据
+- `skills` - 技能数据
+- `profile` - 个人资料
+- `contact_submissions` - 联系表单提交记录
 
-编辑这些文件来更新你的作品集内容。
+### 项目链接字段
+
+每个项目可以在管理后台（`/admin/projects`）中配置多个外部链接，例如 GitHub/Gitee 仓库、在线演示地址或飞书文档等：
+
+- 在项目编辑页的「项目链接」区域添加多条记录，每条包含：
+  - **title**：链接标题（如“GitHub”“在线演示”“飞书文档”）
+  - **url**：实际跳转地址
+  - **icon**：可选，当前仅当设置为 `github` 时，前端会显示 GitHub 图标，其它值将使用通用外链图标
+- 这些链接会显示在项目卡片和项目详情页中，点击后在新窗口打开。
+
+### 迁移脚本
+
+如需从旧版 JSON 数据迁移，可使用迁移脚本：
+
+```bash
+cd backend
+python scripts/migrate_to_mongodb.py
+```
+
+该脚本会从 `backend/app/data/` 读取 JSON 文件并导入到 MongoDB（注意：JSON 文件已在迁移后删除）。
+
+### 环境变量配置
+
+在 `backend/.env` 中配置 MongoDB 连接：
+
+```env
+MONGODB_URL=mongodb://localhost:27017
+MONGODB_DATABASE=portfolio
+```
+
+生产环境请使用远程 MongoDB 实例。
 
 ## API 端点
 

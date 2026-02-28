@@ -1,10 +1,13 @@
 """
 Projects API Router
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
 from app.models.project import Project, ProjectCategory
-from app.services.data_loader import load_projects, get_project_by_slug
+from app.services.data_loader import load_projects, get_project_by_slug_async
+from app.services.data_writer import save_projects, list_backups, restore_backup
+from app.dependencies.auth import get_current_user
+from uuid import uuid4
 
 router = APIRouter()
 
@@ -71,9 +74,146 @@ async def get_project_by_slug_endpoint(slug: str):
     Raises:
         HTTPException: If project not found
     """
-    project = get_project_by_slug(slug)
+    project = await get_project_by_slug_async(slug)
 
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
     return project
+
+
+# ===== Admin CRUD Endpoints =====
+
+@router.post("", response_model=Project, status_code=status.HTTP_201_CREATED)
+async def create_project(
+    project: Project,
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Create a new project (requires authentication)
+
+    Args:
+        project: Project data
+        _current_user: Authenticated user (injected)
+
+    Returns:
+        Created project
+
+    Raises:
+        HTTPException: If slug already exists
+    """
+    projects = await load_projects()
+
+    # Check if slug already exists
+    if any(p.get("slug") == project.slug for p in projects):
+        raise HTTPException(status_code=400, detail="Slug already exists")
+
+    # Auto-generate id if not provided
+    if not project.id:
+        project.id = str(uuid4())
+
+    # Add project
+    projects.append(project.model_dump())
+    await save_projects(projects)
+
+    return project
+
+
+@router.put("/{project_id}", response_model=Project)
+async def update_project(
+    project_id: str,
+    project: Project,
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Update an existing project (requires authentication)
+
+    Args:
+        project_id: Project ID
+        project: Updated project data
+        _current_user: Authenticated user (injected)
+
+    Returns:
+        Updated project
+
+    Raises:
+        HTTPException: If project not found
+    """
+    projects = await load_projects()
+
+    # Find and update project
+    for i, p in enumerate(projects):
+        if p.get("id") == project_id:
+            projects[i] = project.model_dump()
+            await save_projects(projects)
+            return project
+
+    raise HTTPException(status_code=404, detail="Project not found")
+
+
+@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_project(
+    project_id: str,
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Delete a project (requires authentication)
+
+    Args:
+        project_id: Project ID
+        _current_user: Authenticated user (injected)
+
+    Raises:
+        HTTPException: If project not found
+    """
+    projects = await load_projects()
+
+    # Filter out the project
+    original_count = len(projects)
+    projects = [p for p in projects if p.get("id") != project_id]
+
+    if len(projects) == original_count:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    await save_projects(projects)
+
+    return None
+
+
+@router.get("/admin/backups", response_model=List[dict])
+async def get_project_backups(
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Get list of project backups (requires authentication)
+
+    Args:
+        _current_user: Authenticated user (injected)
+
+    Returns:
+        List of backup files
+    """
+    return list_backups("projects.json")
+
+
+@router.post("/admin/restore")
+async def restore_project_backup(
+    backup_path: str,
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Restore a project backup (requires authentication)
+
+    Args:
+        backup_path: Path to backup file
+        _current_user: Authenticated user (injected)
+
+    Returns:
+        Success message
+
+    Raises:
+        HTTPException: If restore fails
+    """
+    if restore_backup("projects.json", backup_path):
+        return {"message": "Backup restored successfully"}
+    raise HTTPException(status_code=500, detail="Failed to restore backup")

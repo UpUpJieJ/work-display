@@ -5,35 +5,132 @@
 
 import Link from 'next/link';
 import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-export function Hero() {
+interface SocialLink {
+  platform: string;
+  url: string;
+  icon: string;
+  display_name: string;
+}
+
+interface HeroProps {
+  compact?: boolean;
+}
+
+export function Hero({ compact = false }: HeroProps) {
+  const [profile, setProfile] = useState<{
+    name: string;
+    title: string;
+    tagline: string;
+    email: string;
+    social_links: SocialLink[];
+  } | null>(null);
+
+  useEffect(() => {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    fetch(`${API_BASE_URL}/api/profile`)
+      .then(res => res.json())
+      .then(data => setProfile(data))
+      .catch(console.error);
+  }, []);
+
+  if (!profile) {
+    return (
+      <section
+        className={
+          compact
+            ? "space-y-6"
+            : "container mx-auto px-4 py-20 md:py-32"
+        }
+      >
+        <div
+          className={
+            compact
+              ? "space-y-4"
+              : "max-w-3xl mx-auto text-center space-y-8"
+          }
+        >
+          <div className="animate-pulse">
+            <div
+              className={`h-12 bg-muted rounded mb-4 ${
+                compact ? "w-32" : "w-48 mx-auto"
+              }`}
+            />
+            <div
+              className={`h-6 bg-muted rounded ${
+                compact ? "w-40" : "w-64 mx-auto"
+              }`}
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const githubLink = profile.social_links?.find(l => l.platform === 'GitHub');
+  const linkedinLink = profile.social_links?.find(l => l.platform === 'LinkedIn');
+  const emailLink = profile.social_links?.find(l => l.platform === 'Email');
+
   return (
-    <section className="container mx-auto px-4 py-20 md:py-32">
-      <div className="max-w-3xl mx-auto text-center space-y-8">
+    <section
+      className={
+        compact ? "space-y-6" : "container mx-auto px-4 py-20 md:py-32"
+      }
+    >
+      <div
+        className={
+          compact
+            ? "space-y-4"
+            : "max-w-3xl mx-auto text-center space-y-8"
+        }
+      >
         {/* Greeting */}
-        <div className="inline-block">
+        <div className={compact ? "" : "inline-block"}>
           <span className="text-primary text-sm font-medium">你好，我是</span>
         </div>
 
         {/* Name and Title */}
         <div className="space-y-4">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+          <h1
+            className={
+              compact
+                ? "text-2xl md:text-3xl font-bold tracking-tight"
+                : "text-4xl md:text-6xl font-bold tracking-tight"
+            }
+          >
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              张三
+              {profile.name}
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground">
-            Python 全栈开发工程师
+          <p
+            className={
+              compact
+                ? "text-lg text-muted-foreground"
+                : "text-xl md:text-2xl text-muted-foreground"
+            }
+          >
+            {profile.title}
           </p>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            热爱编程，专注于构建高效、优雅的解决方案。
-            <br />
-            在 Web 开发、数据分析和自动化领域有着丰富的经验。
+          <p
+            className={
+              compact
+                ? "text-muted-foreground text-sm"
+                : "text-muted-foreground max-w-2xl mx-auto"
+            }
+          >
+            {profile.tagline}
           </p>
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <div
+          className={
+            compact
+              ? "flex flex-wrap gap-3 pt-2"
+              : "flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+          }
+        >
           <Link
             href="/projects"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
@@ -50,32 +147,44 @@ export function Hero() {
         </div>
 
         {/* Social Links */}
-        <div className="flex items-center justify-center gap-6 pt-4">
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
-            aria-label="GitHub"
-          >
-            <Github className="w-5 h-5" />
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
-            aria-label="LinkedIn"
-          >
-            <Linkedin className="w-5 h-5" />
-          </a>
-          <a
-            href="mailto:example@email.com"
-            className="text-muted-foreground hover:text-primary transition-colors"
-            aria-label="Email"
-          >
-            <Mail className="w-5 h-5" />
-          </a>
+        <div
+          className={
+            compact
+              ? "flex items-center gap-4 pt-2"
+              : "flex items-center justify-center gap-6 pt-4"
+          }
+        >
+          {githubLink && (
+            <a
+              href={githubLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="GitHub"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+          )}
+          {linkedinLink && (
+            <a
+              href={linkedinLink.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          )}
+          {emailLink && (
+            <a
+              href={emailLink.url}
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Email"
+            >
+              <Mail className="w-5 h-5" />
+            </a>
+          )}
         </div>
       </div>
     </section>

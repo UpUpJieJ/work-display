@@ -15,63 +15,45 @@ export default async function HomePage() {
   ]);
 
   return (
-    <>
-      {/* Hero Section */}
-      <Hero />
-
-      {/* Featured Projects Section */}
-      <section className="container mx-auto px-4 py-16 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">精选项目</h2>
-            <Link
-              href="/projects"
-              className="text-primary hover:underline inline-flex items-center gap-1"
-            >
-              查看全部 →
-            </Link>
+    <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
+      <div className="max-w-8xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Left: 自我介绍 + 技能专长 */}
+          <div className="lg:col-span-2 space-y-10">
+            <Hero compact />
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold">技能专长</h2>
+                <Link
+                  href="/about"
+                  className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+                >
+                  了解更多 →
+                </Link>
+              </div>
+              <SkillsGrid skills={skills} compact />
+            </section>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.slice(0, 3).map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Skills Preview Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">技能专长</h2>
-            <Link
-              href="/about"
-              className="text-primary hover:underline inline-flex items-center gap-1"
-            >
-              了解更多 →
-            </Link>
-          </div>
-          <SkillsGrid skills={skills} />
+          {/* Right: 精选项目 */}
+          <section className="lg:col-span-3">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">精选项目</h2>
+              <Link
+                href="/projects"
+                className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+              >
+                查看全部 →
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {projects.slice(0, 3).map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16 bg-primary/5">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            让我们一起构建精彩的项目
-          </h2>
-          <p className="text-muted-foreground mb-8">
-            如果您对我的工作感兴趣，欢迎随时与我联系
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-          >
-            联系我
-          </Link>
-        </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 }

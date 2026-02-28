@@ -31,7 +31,7 @@ class Technology(BaseModel):
 
 class Project(BaseModel):
     """Project model"""
-    id: str = Field(..., description="Unique project identifier")
+    id: Optional[str] = Field(None, description="Unique project identifier (auto-generated if not provided)")
     title: str = Field(..., min_length=1, max_length=100)
     slug: str = Field(..., description="URL-friendly identifier")
     short_description: str = Field(..., max_length=200)
