@@ -1,13 +1,11 @@
 # Portfolio Frontend - Production Dockerfile
 # Build from project root: docker build -t portfolio-frontend -f frontend/Dockerfile .
-#   Or from frontend/: docker build -t portfolio-frontend .
+#   Or from frontend/:   docker build -t portfolio-frontend .
 
 # =============================================================================
 # Stage 1: Base - Common dependencies
 # =============================================================================
 FROM node:18-alpine AS base
-# Install dependencies only when needed
-
 
 # =============================================================================
 # Stage 2: Dependencies - Install all dependencies
@@ -52,7 +50,6 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy built application from builder
-COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
