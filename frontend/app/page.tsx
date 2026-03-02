@@ -4,14 +4,15 @@
 import { Hero } from "@/components/hero";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SkillsGrid } from "@/components/skills/skills-grid";
-import { fetchProjects, fetchSkills } from "@/lib/api";
+import { fetchProjects, fetchSkills, fetchProfile } from "@/lib/api";
 import Link from "next/link";
 
 export default async function HomePage() {
   // Fetch featured projects and skills
-  const [projects, skills] = await Promise.all([
+  const [projects, skills, profile] = await Promise.all([
     fetchProjects(undefined, true),
     fetchSkills(undefined, true),
+    fetchProfile(),
   ]);
 
   return (
@@ -20,7 +21,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Left: 自我介绍 + 技能专长 */}
           <div className="lg:col-span-2 space-y-10">
-            <Hero compact />
+            <Hero compact profile={profile} />
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">技能专长</h2>

@@ -39,7 +39,6 @@ export interface Project {
   technologies: string[];
   links: ProjectLink[];
   featured: boolean;
-  image?: string;
   status: ProjectStatus;
   highlights: string[];
 }
@@ -121,7 +120,6 @@ export interface Profile {
   email?: string;
   phone?: string;
   location?: string;
-  avatar?: string;
   resume_url?: string;
   social_links: SocialLink[];
   experience: Experience[];

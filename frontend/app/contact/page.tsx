@@ -4,6 +4,7 @@
 import { ContactForm } from '@/components/contact/contact-form';
 import { fetchProfile } from '@/lib/api';
 import { Mail, MapPin, Github, Linkedin } from 'lucide-react';
+import { EmailButton } from '@/components/email-button';
 
 export default async function ContactPage() {
   const profile = await fetchProfile();
@@ -32,12 +33,10 @@ export default async function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">邮箱</p>
-                      <a
-                        href={`mailto:${profile.email}`}
-                        className="text-foreground hover:text-primary transition-colors"
-                      >
-                        {profile.email}
-                      </a>
+                      <EmailButton
+                        email={profile.email}
+                        className="text-foreground"
+                      />
                     </div>
                   </div>
                 )}
@@ -65,8 +64,8 @@ export default async function ContactPage() {
                       link.icon === 'github'
                         ? Github
                         : link.icon === 'linkedin'
-                        ? Linkedin
-                        : Mail;
+                          ? Linkedin
+                          : Mail;
                     return (
                       <a
                         key={link.platform}

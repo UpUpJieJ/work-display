@@ -4,7 +4,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Project } from '@/lib/types';
 import { Github, ExternalLink } from 'lucide-react';
@@ -70,16 +69,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
       onKeyDown={handleKeyDown}
       className="group cursor-pointer bg-card rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-border"
     >
-      {/* Project Image */}
-      {project.image && (
-        <div className="relative h-48 overflow-hidden bg-muted">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-            <span className="text-4xl font-bold text-primary/20">{project.title[0]}</span>
-          </div>
-        </div>
-      )}
-
       {/* Project Content */}
       <div className="p-6">
         {/* Category Badge */}

@@ -14,20 +14,69 @@ export function ContactForm() {
     subject: '',
     message: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null;
     message: string;
   }>({ type: null, message: '' });
 
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) return '请输入您的姓名';
+        if (value.length < 2) return '姓名至少需要2个字符';
+        return '';
+      case 'email':
+        if (!value.trim()) return '请输入邮箱地址';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) return '请输入有效的邮箱地址';
+        return '';
+      case 'message':
+        if (!value.trim()) return '请输入消息内容';
+        if (value.length < 10) return '消息内容至少需要10个字符';
+        return '';
+      default:
+        return '';
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Validate on change if field was touched
+    if (touched[name]) {
+      const error = validateField(name, value);
+      setErrors({ ...errors, [name]: error });
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTouched({ ...touched, [name]: true });
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key as keyof typeof formData]);
+      if (error) newErrors[key] = error;
+    });
+    setErrors(newErrors);
+    setTouched({ name: true, email: true, message: true, subject: true });
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: '' });
 
@@ -65,9 +114,16 @@ export function ContactForm() {
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              onBlur={handleBlur}
+              className={`w-full pl-10 pr-4 py-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.name && touched.name
+                  ? 'border-red-500 dark:border-red-400'
+                  : 'border-input'
+                }`}
               placeholder="您的姓名"
             />
+            {errors.name && touched.name && (
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.name}</p>
+            )}
           </div>
         </div>
 
@@ -85,9 +141,16 @@ export function ContactForm() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              onBlur={handleBlur}
+              className={`w-full pl-10 pr-4 py-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.email && touched.email
+                  ? 'border-red-500 dark:border-red-400'
+                  : 'border-input'
+                }`}
               placeholder="your@email.com"
             />
+            {errors.email && touched.email && (
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.email}</p>
+            )}
           </div>
         </div>
 
@@ -110,7 +173,7 @@ export function ContactForm() {
         {/* Message */}
         <div>
           <label htmlFor="message" className="block text-sm font-medium mb-2">
-            消息
+            消息 <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
@@ -121,20 +184,26 @@ export function ContactForm() {
               rows={5}
               value={formData.message}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+              onBlur={handleBlur}
+              className={`w-full pl-10 pr-4 py-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none ${errors.message && touched.message
+                  ? 'border-red-500 dark:border-red-400'
+                  : 'border-input'
+                }`}
               placeholder="请输入您的消息..."
             />
           </div>
+          {errors.message && touched.message && (
+            <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.message}</p>
+          )}
         </div>
 
         {/* Status Message */}
         {submitStatus.type && (
           <div
-            className={`p-4 rounded-lg ${
-              submitStatus.type === 'success'
+            className={`p-4 rounded-lg ${submitStatus.type === 'success'
                 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                 : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-            }`}
+              }`}
           >
             {submitStatus.message}
           </div>

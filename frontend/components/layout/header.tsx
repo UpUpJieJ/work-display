@@ -6,7 +6,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 
 const navigation = [
   { name: '首页', href: '/' },
@@ -18,6 +19,7 @@ const navigation = [
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,18 +37,41 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive ? 'text-primary' : 'text-muted-foreground'
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-primary ${isActive ? 'text-primary' : 'text-muted-foreground'
+                  }`}
               >
                 {item.name}
               </Link>
             );
           })}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md"
+            aria-label="切换主题"
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
         </div>
 
         {/* Mobile menu button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md"
+            aria-label="切换主题"
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -71,11 +96,10 @@ export function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`block rounded-md px-3 py-2 text-sm font-medium ${
-                    isActive
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  }`}
+                  className={`block rounded-md px-3 py-2 text-sm font-medium ${isActive
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}

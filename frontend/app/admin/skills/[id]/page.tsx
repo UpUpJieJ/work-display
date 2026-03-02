@@ -128,6 +128,14 @@ export default function AdminSkillEditPage() {
     concepts: "概念",
   };
 
+  const proficiencyNames: Record<ProficiencyLevel, string> = {
+    expert: "专家",
+    advanced: "高级",
+    intermediate: "中级",
+    beginner: "初级",
+    learning: "学习中",
+  };
+
   return (
     <div>
       <div className="mb-6">
@@ -160,7 +168,7 @@ export default function AdminSkillEditPage() {
               />
               {!isNew && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Skill name cannot be changed after creation
+                  技能创建后无法修改名称
                 </p>
               )}
             </div>
@@ -199,7 +207,7 @@ export default function AdminSkillEditPage() {
               >
                 {proficiencies.map((prof) => (
                   <option key={prof} value={prof}>
-                    {prof.charAt(0).toUpperCase() + prof.slice(1)}
+                    {proficiencyNames[prof]}
                   </option>
                 ))}
               </select>
@@ -227,7 +235,7 @@ export default function AdminSkillEditPage() {
 
           <div>
             <label htmlFor="icon" className="block text-sm font-medium mb-2">
-              Icon
+              图标
             </label>
             <input
               id="icon"
@@ -238,7 +246,7 @@ export default function AdminSkillEditPage() {
               placeholder="e.g. python, javascript, react"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Icon class name or identifier
+              图标类名或标识符
             </p>
           </div>
 
@@ -250,7 +258,7 @@ export default function AdminSkillEditPage() {
                 onChange={(e) => setSkill({ ...skill, featured: e.target.checked })}
                 className="w-4 h-4 text-primary rounded focus:ring-primary"
               />
-              <span className="text-sm font-medium">Featured Skill</span>
+              <span className="text-sm font-medium">精选技能</span>
             </label>
           </div>
 

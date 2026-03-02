@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
       );
 
       if (!response.ok) {
-        throw new Error("Invalid password");
+        throw new Error("密码错误");
       }
 
       const data: LoginResponse = await response.json();
@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
       // Redirect to admin dashboard
       router.push("/admin");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "登录失败");
     } finally {
       setLoading(false);
     }
@@ -62,16 +62,16 @@ export default function AdminLoginPage() {
           </div>
 
           <h1 className="text-2xl font-bold text-center mb-2">
-            Admin Login
+            管理员登录
           </h1>
           <p className="text-muted-foreground text-center mb-6">
-            Enter your password to access the admin panel
+            请输入密码以访问管理面板
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Password
+                密码
               </label>
               <input
                 id="password"
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
-                placeholder="Enter password"
+                placeholder="请输入密码"
                 required
               />
             </div>
@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
               disabled={loading}
               className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "登录中..." : "登录"}
             </button>
           </form>
         </div>

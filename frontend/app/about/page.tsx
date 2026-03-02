@@ -4,6 +4,7 @@
 import { SkillsGrid } from "@/components/skills/skills-grid";
 import { fetchProfile, fetchSkillsGrouped } from "@/lib/api";
 import { Mail, MapPin, Calendar } from "lucide-react";
+import { EmailButton } from "@/components/email-button";
 
 export default async function AboutPage() {
   const [profile, skillsGrouped] = await Promise.all([
@@ -47,12 +48,10 @@ export default async function AboutPage() {
               {profile.email && (
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-muted-foreground" />
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {profile.email}
-                  </a>
+                  <EmailButton
+                    email={profile.email}
+                    className="text-sm text-primary"
+                  />
                 </div>
               )}
             </div>

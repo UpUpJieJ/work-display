@@ -44,8 +44,8 @@ async function fetchAdminAPI(endpoint: string, options?: RequestInit) {
     }
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      // Don't expose backend error details to client
+      throw new Error(`操作失败，请稍后重试 (${response.status})`);
     }
 
     // For DELETE requests with 204 status
@@ -158,6 +158,29 @@ export async function restoreProfileBackup(backupPath: string): Promise<{ messag
     method: "POST",
     body: JSON.stringify({ backup_path: backupPath }),
   });
+}
+
+// Contact Submissions
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  submitted_at: string;
+}
+
+export async function getContactSubmissions(): Promise<ContactSubmission[]> {
+  return fetchAdminAPI("/api/contact");
+}
+
+// Profile (admin view) - uses public endpoint without auth
+export async function getProfile(): Promise<Profile> {
+  const response = await fetch(`${API_BASE_URL}/api/profile`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch profile");
+  }
+  return response.json();
 }
 
 // Types

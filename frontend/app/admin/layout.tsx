@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   X,
+  MessageSquare,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -60,10 +61,11 @@ export default function AdminLayout({
   }
 
   const navigation = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Projects", href: "/admin/projects", icon: FolderKanban },
-    { name: "Skills", href: "/admin/skills", icon: Brain },
-    { name: "Profile", href: "/admin/profile", icon: User },
+    { name: "仪表盘", href: "/admin", icon: LayoutDashboard },
+    { name: "项目", href: "/admin/projects", icon: FolderKanban },
+    { name: "技能", href: "/admin/skills", icon: Brain },
+    { name: "个人资料", href: "/admin/profile", icon: User },
+    { name: "消息", href: "/admin/contact", icon: MessageSquare },
   ];
 
   return (
@@ -86,7 +88,7 @@ export default function AdminLayout({
       >
         <div className="flex flex-col h-full">
           <div className="p-4 border-b dark:border-gray-700">
-            <h1 className="text-xl font-bold">Admin Panel</h1>
+            <h1 className="text-xl font-bold">管理面板</h1>
           </div>
 
           <nav className="flex-1 p-4 space-y-1">

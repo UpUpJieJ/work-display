@@ -1,67 +1,28 @@
 /**
  * Hero Section Component
+ * Accepts profile data as props for server-side rendering
  */
-'use client';
-
 import Link from 'next/link';
 import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-interface SocialLink {
-  platform: string;
-  url: string;
-  icon: string;
-  display_name: string;
-}
+import { Profile } from '@/lib/types';
 
 interface HeroProps {
   compact?: boolean;
+  profile?: Profile | null;
 }
 
-export function Hero({ compact = false }: HeroProps) {
-  const [profile, setProfile] = useState<{
-    name: string;
-    title: string;
-    tagline: string;
-    email: string;
-    social_links: SocialLink[];
-  } | null>(null);
+export function Hero({ compact = false, profile }: HeroProps) {
 
-  useEffect(() => {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    fetch(`${API_BASE_URL}/api/profile`)
-      .then(res => res.json())
-      .then(data => setProfile(data))
-      .catch(console.error);
-  }, []);
-
+  // Handle case when profile is not provided
   if (!profile) {
     return (
       <section
-        className={
-          compact
-            ? "space-y-6"
-            : "container mx-auto px-4 py-20 md:py-32"
-        }
+        className={compact ? "space-y-6" : "container mx-auto px-4 py-20 md:py-32"}
       >
-        <div
-          className={
-            compact
-              ? "space-y-4"
-              : "max-w-3xl mx-auto text-center space-y-8"
-          }
-        >
+        <div className={compact ? "space-y-4" : "max-w-3xl mx-auto text-center space-y-8"}>
           <div className="animate-pulse">
-            <div
-              className={`h-12 bg-muted rounded mb-4 ${
-                compact ? "w-32" : "w-48 mx-auto"
-              }`}
-            />
-            <div
-              className={`h-6 bg-muted rounded ${
-                compact ? "w-40" : "w-64 mx-auto"
-              }`}
-            />
+            <div className={`h-12 bg-muted rounded mb-4 ${compact ? "w-32" : "w-48 mx-auto"}`} />
+            <div className={`h-6 bg-muted rounded ${compact ? "w-40" : "w-64 mx-auto"}`} />
           </div>
         </div>
       </section>
