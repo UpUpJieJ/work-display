@@ -3,8 +3,8 @@
  * TypeScript types for the portfolio application
  */
 
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// API Base URL - must use environment variable
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 // ============= Project Types =============
 

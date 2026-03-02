@@ -10,6 +10,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://backend:8000
     image: portfolio-frontend:latest
     container_name: portfolio-frontend
     ports:

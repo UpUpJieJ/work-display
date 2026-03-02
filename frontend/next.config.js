@@ -4,12 +4,6 @@ const nextConfig = {
   // Enable dynamic rendering for pages that depend on external API
   dynamicParams: true,
   // Treat dynamic routes as non-static to avoid build-time API calls
-  experimental: {
-    ppr: false,
-  },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-  },
   images: {
     remotePatterns: [
       {
