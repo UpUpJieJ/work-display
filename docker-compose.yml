@@ -1,0 +1,98 @@
+# Portfolio Website - Production Docker Compose
+# Build and run: docker-compose up -d --build
+# View logs: docker-compose logs -f
+
+services:
+  # =============================================================================
+  # Frontend (Next.js)
+  # =============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: portfolio-frontend:latest
+    container_name: portfolio-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - portfolio-network
+
+  # =============================================================================
+  # Backend (FastAPI)
+  # =============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: portfolio-backend:latest
+    container_name: portfolio-backend
+    ports:
+      - "8000:8000"
+    env_file: ./backend/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./backend/app:/app/app:ro
+    networks:
+      - portfolio-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  portfolio-network:
+    driver: bridge
+
+# =============================================================================
+# Usage Instructions
+# =============================================================================
+# 
+# Build and start all services:
+#   docker-compose up -d --build
+#
+# View logs:
+#   docker-compose logs -f
+#   docker-compose logs -f frontend
+#   docker-compose logs -f backend
+#
+# Stop all services:
+#   docker-compose down
+#
+# Rebuild specific service:
+#   docker-compose up -d --build frontend
+#   docker-compose up -d --build backend
+#
+# View service status:
+#   docker-compose ps
+#
+# Access container shell:
+#   docker-compose exec frontend sh
+#   docker-compose exec backend sh
+#
+# 注意事项：
+# - MongoDB 需要在 .env 文件中配置 MONGODB_URL 指向你的 MongoDB 实例
+# - 示例: MONGODB_URL=mongodb://your-mongodb-host:27017

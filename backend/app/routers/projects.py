@@ -5,7 +5,13 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
 from app.models.project import Project, ProjectCategory
 from app.services.data_loader import load_projects, get_project_by_slug_async
-from app.services.data_writer import save_projects, list_backups, restore_backup
+from app.services.data_writer import (
+    insert_project,
+    update_project,
+    delete_project,
+    list_backups,
+    restore_backup,
+)
 from app.dependencies.auth import get_current_user
 from uuid import uuid4
 
@@ -112,9 +118,7 @@ async def create_project(
     if not project.id:
         project.id = str(uuid4())
 
-    # Add project
-    projects.append(project.model_dump())
-    await save_projects(projects)
+    await insert_project(project.model_dump())
 
     return project
 
@@ -139,16 +143,11 @@ async def update_project(
     Raises:
         HTTPException: If project not found
     """
-    projects = await load_projects()
-
-    # Find and update project
-    for i, p in enumerate(projects):
-        if p.get("id") == project_id:
-            projects[i] = project.model_dump()
-            await save_projects(projects)
-            return project
-
-    raise HTTPException(status_code=404, detail="Project not found")
+    project.id = project_id
+    updated = await update_project(project_id, project.model_dump())
+    if not updated:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -166,17 +165,9 @@ async def delete_project(
     Raises:
         HTTPException: If project not found
     """
-    projects = await load_projects()
-
-    # Filter out the project
-    original_count = len(projects)
-    projects = [p for p in projects if p.get("id") != project_id]
-
-    if len(projects) == original_count:
+    deleted = await delete_project(project_id)
+    if not deleted:
         raise HTTPException(status_code=404, detail="Project not found")
-
-    await save_projects(projects)
-
     return None
 
 

@@ -24,7 +24,10 @@ app = FastAPI(
     title="Portfolio API",
     description="Python Developer Portfolio API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url=None,  # Disable /docs
+    redoc_url=None,  # Disable /redoc
+    openapi_url=None  # Disable OpenAPI schema
 )
 
 # CORS configuration - parse comma-separated origins

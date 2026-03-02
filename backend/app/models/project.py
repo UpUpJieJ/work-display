@@ -40,7 +40,6 @@ class Project(BaseModel):
     technologies: List[str] = Field(default_factory=list)
     links: List[ProjectLink] = Field(default_factory=list)
     featured: bool = Field(default=False, description="Show on homepage")
-    image: Optional[str] = Field(None, description="Project screenshot path")
     status: str = Field(default="completed", description="completed, in_progress, planned")
     highlights: List[str] = Field(default_factory=list, description="Key features/achievements")
 

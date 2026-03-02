@@ -137,22 +137,3 @@ async def get_current_user():
     """
     return User(username="admin")
 
-
-def generate_password_hash(password: str, salt: str = None) -> str:
-    """
-    Generate a password hash for configuration
-
-    Args:
-        password: Password to hash
-        salt: Optional salt (uses default if not provided)
-
-    Returns:
-        Hash string for use in environment variables
-
-    Example:
-        hash = generate_password_hash("my-password")
-        print(f"ADMIN_PASSWORD_HASH={hash}")
-    """
-    salt_to_use = salt or PASSWORD_SALT
-    salted = f"{salt_to_use}{password}".encode('utf-8')
-    return hashlib.sha256(salted).hexdigest()

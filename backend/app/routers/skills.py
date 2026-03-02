@@ -5,9 +5,14 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
 from app.models.skill import Skill, SkillCategory
 from app.services.data_loader import load_skills
-from app.services.data_writer import save_skills, list_backups, restore_backup
+from app.services.data_writer import (
+    insert_skill,
+    update_skill,
+    delete_skill,
+    list_backups,
+    restore_backup,
+)
 from app.dependencies.auth import get_current_user
-from uuid import uuid4
 
 router = APIRouter()
 
@@ -124,9 +129,7 @@ async def create_skill(
     if any(s.get("name") == skill.name for s in skills):
         raise HTTPException(status_code=400, detail="Skill name already exists")
 
-    # Add skill
-    skills.append(skill.model_dump())
-    await save_skills(skills)
+    await insert_skill(skill.model_dump())
 
     return skill
 
@@ -151,16 +154,10 @@ async def update_skill(
     Raises:
         HTTPException: If skill not found
     """
-    skills = await load_skills()
-
-    # Find and update skill by name
-    for i, s in enumerate(skills):
-        if s.get("name") == skill_name:
-            skills[i] = skill.model_dump()
-            await save_skills(skills)
-            return skill
-
-    raise HTTPException(status_code=404, detail="Skill not found")
+    updated = await update_skill(skill_name, skill.model_dump())
+    if not updated:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    return skill
 
 
 @router.delete("/{skill_name}", status_code=status.HTTP_204_NO_CONTENT)
@@ -178,17 +175,9 @@ async def delete_skill(
     Raises:
         HTTPException: If skill not found
     """
-    skills = await load_skills()
-
-    # Filter out the skill by name
-    original_count = len(skills)
-    skills = [s for s in skills if s.get("name") != skill_name]
-
-    if len(skills) == original_count:
+    deleted = await delete_skill(skill_name)
+    if not deleted:
         raise HTTPException(status_code=404, detail="Skill not found")
-
-    await save_skills(skills)
-
     return None
 
 

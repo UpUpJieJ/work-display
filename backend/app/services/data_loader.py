@@ -82,12 +82,6 @@ async def load_profile() -> Dict[str, Any]:
     return profile
 
 
-def get_project_by_slug(slug: str) -> Optional[Dict[str, Any]]:
-    """Synchronous wrapper for get_project_by_slug_async"""
-    import asyncio
-    return asyncio.run(get_project_by_slug_async(slug))
-
-
 async def get_project_by_slug_async(slug: str) -> Optional[Dict[str, Any]]:
     """Get a single project by slug"""
     db = get_db()
@@ -101,44 +95,3 @@ async def get_project_by_slug_async(slug: str) -> Optional[Dict[str, Any]]:
         del project["_id"]
 
     return project
-
-
-async def load_skills_grouped() -> List[Dict[str, Any]]:
-    """Load skills grouped by category"""
-    db = get_db()
-
-    pipeline = [
-        {"$group": {
-            "_id": "$category",
-            "skills": {"$push": "$$ROOT"}
-        }}
-    ]
-
-    cursor = db.skills.aggregate(pipeline)
-    results = await cursor.to_list(length=None)
-
-    category_names = {
-        "languages": "编程语言",
-        "frameworks": "框架",
-        "databases": "数据库",
-        "tools": "工具",
-        "cloud_platforms": "云平台",
-        "concepts": "概念"
-    }
-
-    grouped = []
-    for result in results:
-        category = result["_id"]
-        skills = result["skills"]
-        # Remove _id from each skill
-        for skill in skills:
-            if "_id" in skill:
-                del skill["_id"]
-
-        grouped.append({
-            "category": category,
-            "category_name": category_names.get(category, category),
-            "skills": skills
-        })
-
-    return grouped

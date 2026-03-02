@@ -10,10 +10,6 @@ async def save_projects(projects: List[Dict[str, Any]]) -> bool:
     """Save projects to MongoDB"""
     db = get_db()
 
-    # Delete all existing projects (simple approach)
-    await db.projects.delete_many({})
-
-    # Insert all projects with updated timestamp
     for proj in projects:
         proj["updated_at"] = datetime.utcnow()
 
@@ -27,8 +23,6 @@ async def save_skills(skills: List[Dict[str, Any]]) -> bool:
     """Save skills to MongoDB"""
     db = get_db()
 
-    await db.skills.delete_many({})
-
     if skills:
         await db.skills.insert_many(skills)
 
@@ -39,14 +33,48 @@ async def save_profile(profile: Dict[str, Any]) -> bool:
     """Save profile to MongoDB"""
     db = get_db()
 
-    # Delete existing profile
-    await db.profiles.delete_many({})
-
-    # Insert new profile with updated timestamp
     profile["updated_at"] = datetime.utcnow()
-    await db.profiles.insert_one(profile)
+    await db.profiles.replace_one({}, profile, upsert=True)
 
     return True
+
+
+async def insert_project(project: Dict[str, Any]) -> bool:
+    db = get_db()
+    project["updated_at"] = datetime.utcnow()
+    await db.projects.insert_one(project)
+    return True
+
+
+async def update_project(project_id: str, project: Dict[str, Any]) -> bool:
+    db = get_db()
+    project["updated_at"] = datetime.utcnow()
+    result = await db.projects.update_one({"id": project_id}, {"$set": project})
+    return result.matched_count > 0
+
+
+async def delete_project(project_id: str) -> bool:
+    db = get_db()
+    result = await db.projects.delete_one({"id": project_id})
+    return result.deleted_count > 0
+
+
+async def insert_skill(skill: Dict[str, Any]) -> bool:
+    db = get_db()
+    await db.skills.insert_one(skill)
+    return True
+
+
+async def update_skill(skill_name: str, skill: Dict[str, Any]) -> bool:
+    db = get_db()
+    result = await db.skills.update_one({"name": skill_name}, {"$set": skill})
+    return result.matched_count > 0
+
+
+async def delete_skill(skill_name: str) -> bool:
+    db = get_db()
+    result = await db.skills.delete_one({"name": skill_name})
+    return result.deleted_count > 0
 
 
 async def save_contact_submission(submission: Dict[str, Any]) -> bool:

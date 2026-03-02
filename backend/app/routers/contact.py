@@ -1,9 +1,12 @@
 """
 Contact API Router
 """
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from typing import List
 from app.models.profile import ContactSubmission
 from app.services.data_writer import save_contact_submission
+from app.dependencies.auth import get_current_user
+from app.database import get_db
 from datetime import datetime
 from uuid import uuid4
 
@@ -50,6 +53,37 @@ async def submit_contact(submission: ContactSubmission):
         }
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred: {str(e)}"
+        )
+
+
+@router.get("", response_model=List[dict])
+async def get_contact_submissions(
+    _current_user: str = Depends(get_current_user)
+):
+    """
+    Get all contact form submissions (requires authentication)
+
+    Args:
+        _current_user: Authenticated user (injected)
+
+    Returns:
+        List of contact submissions
+    """
+    try:
+        db = get_db()
+        # Get all submissions, sorted by submitted_at descending
+        submissions = await db.contact_submissions.find().sort("submitted_at", -1).to_list(100)
+        
+        # Convert ObjectId to string
+        for submission in submissions:
+            if "_id" in submission:
+                submission["_id"] = str(submission["_id"])
+        
+        return submissions
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

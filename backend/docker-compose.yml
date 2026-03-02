@@ -1,0 +1,35 @@
+services:
+  portfolio-backend:
+    # 使用 build 而不是 image，这样可以每次构建最新代码
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: portfolio-backend:latest
+    container_name: portfolio-backend
+    ports:
+      - "8081:8000"
+    env_file: /data/www/work-display/.env
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# 使用命令更新：
+# 1. 拉取新代码后，重新构建并启动：
+#    docker-compose up -d --build
+#
+# 2. 或者分步执行：
+#    docker-compose build --no-cache  # 完全重新构建
+#    docker-compose up -d             # 启动新容器（自动停止旧的）
+#
+# 3. 查看日志：
+#    docker-compose logs -f
+#
+# 4. 如果需要强制重建：
+#    docker-compose build --no-cache --force-rm
+#    docker-compose up -d

@@ -46,7 +46,6 @@ class Profile(BaseModel):
     email: Optional[str] = Field(None, description="Contact email")
     phone: Optional[str] = Field(None, description="Contact phone")
     location: Optional[str] = Field(None, description="City, Country")
-    avatar: Optional[str] = Field(None, description="Profile image path")
     resume_url: Optional[str] = Field(None, description="Resume download link")
     social_links: List[SocialLink] = Field(default_factory=list)
     experience: List[Experience] = Field(default_factory=list)

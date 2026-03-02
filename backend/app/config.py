@@ -2,8 +2,8 @@
 Application Configuration using Pydantic Settings
 """
 from pydantic_settings import BaseSettings
-
-
+from dotenv import load_dotenv
+load_dotenv()
 class Settings(BaseSettings):
     """Application settings"""
 
@@ -16,20 +16,20 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
 
     # CORS (comma-separated string)
-    allowed_origins: str = "http://localhost:3000"
+    allowed_origins: str
 
     # JWT Settings
-    jwt_secret_key: str = "your-secret-key-change-in-production-min-32-chars"
+    jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24  # 24 hours
 
     # Password Settings
-    password_salt: str = "default-salt-change-in-production"
-    admin_password_hash: str = "b6a31c6e4192ca77fec64e177acb8808d2fbc1f4525c046f5070a6d620d19511"  # "admin123"
+    password_salt: str
+    admin_password_hash: str
 
     # MongoDB Settings
-    mongodb_url: str = "mongodb://localhost:27017"
-    mongodb_database: str = "portfolio"
+    mongodb_url: str
+    mongodb_database: str
 
     class Config:
         env_file = ".env"
