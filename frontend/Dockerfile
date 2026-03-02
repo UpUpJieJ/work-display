@@ -7,7 +7,7 @@
 # =============================================================================
 FROM node:18-alpine AS base
 # Install dependencies only when needed
-RUN apk add --no-cache libc6
+
 
 # =============================================================================
 # Stage 2: Dependencies - Install all dependencies
