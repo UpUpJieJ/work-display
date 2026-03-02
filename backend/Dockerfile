@@ -15,16 +15,9 @@ RUN pip install --no-cache-dir uv
 
 # Copy dependency files first for better layer caching
 COPY requirements.txt pyproject.toml ./
-COPY uv.lock ./uv.lock 2>/dev/null || true
 
-# Install dependencies using uv (with lock file if available)
-# uv is 10-100x faster than pip
+# Install dependencies using uv
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system \
-    --no-cache \
-    --frozen \
-    --no-dev \
-    -r requirements.txt || \
     uv pip install --system \
     --no-cache \
     --no-dev \
@@ -39,7 +32,7 @@ WORKDIR /app
 
 # Install minimal runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # curl for health check \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
@@ -53,7 +46,7 @@ COPY run.py ./run.py
 # Non-root user for security
 RUN groupadd --gid 1000 appgroup && \
     useradd --uid 1000 --gid appgroup --shell /bin/bash --create-home appuser && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appgroup /app
 USER appuser
 
 # Expose port
@@ -61,7 +54,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Start uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
