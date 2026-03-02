@@ -14,14 +14,10 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 # Copy dependency files first for better layer caching
-COPY requirements.txt pyproject.toml ./
+COPY pyproject.toml uv.lock ./
 
-# Install dependencies using uv
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system \
-    --no-cache \
-    --no-dev \
-    -r requirements.txt
+# Sync dependencies using uv (without dev dependencies)
+RUN uv sync --frozen --no-dev
 
 # =============================================================================
 # Stage 2: Production - Final runtime image
@@ -36,8 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy application code
 COPY app ./app
