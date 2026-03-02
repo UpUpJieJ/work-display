@@ -1,8 +1,12 @@
 /**
  * Admin Dashboard Home
  */
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchProjects, fetchSkills, fetchProfile } from "@/lib/api";
+import { Project, Skill, Profile } from "@/lib/types";
 import {
   FolderKanban,
   Brain,
@@ -11,14 +15,41 @@ import {
   Activity,
 } from "lucide-react";
 
-export default async function AdminDashboardPage() {
-  const [projects, skills, profile] = await Promise.all([
-    fetchProjects(),
-    fetchSkills(),
-    fetchProfile(),
-  ]);
+interface Stat {
+  name: string;
+  value: number | string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}
 
-  const stats = [
+export default function AdminDashboardPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [projectsData, skillsData, profileData] = await Promise.all([
+          fetchProjects(),
+          fetchSkills(),
+          fetchProfile(),
+        ]);
+        setProjects(projectsData);
+        setSkills(skillsData);
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const stats: Stat[] = [
     {
       name: "项目总数",
       value: projects.length,
@@ -28,7 +59,7 @@ export default async function AdminDashboardPage() {
     },
     {
       name: "精选项目",
-      value: projects.filter((p: any) => p.featured).length,
+      value: projects.filter((p) => p.featured).length,
       href: "/admin/projects",
       icon: Activity,
       color: "bg-green-500",
@@ -42,12 +73,20 @@ export default async function AdminDashboardPage() {
     },
     {
       name: "个人资料",
-      value: profile.name,
+      value: profile?.name || "未设置",
       href: "/admin/profile",
       icon: User,
       color: "bg-orange-500",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">加载中...</div>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -1,62 +1,102 @@
 /**
  * Project Detail Page Component
  */
-import { fetchProject, fetchProjects } from '@/lib/api';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+"use client";
 
-interface ProjectPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-}
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { fetchProject, fetchProjects } from "@/lib/api";
+import { Project } from "@/lib/types";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { slug } = await params;
-  const project = await fetchProject(slug);
+export default function ProjectPage() {
+  const params = useParams();
+  const slug = params?.slug as string;
+  const [project, setProject] = useState<Project | null>(null);
+  const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!project) {
-    notFound();
+  useEffect(() => {
+    if (!slug) return;
+
+    async function loadData() {
+      try {
+        const [projectData, allProjects] = await Promise.all([
+          fetchProject(slug),
+          fetchProjects(),
+        ]);
+
+        if (!projectData) {
+          notFound();
+          return;
+        }
+
+        setProject(projectData);
+        setRelatedProjects(
+          allProjects
+            .filter((p) => p.category === projectData.category && p.id !== projectData.id)
+            .slice(0, 3)
+        );
+      } catch (err) {
+        setError("加载项目失败");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center">加载中...</div>
+      </div>
+    );
   }
 
-  // Fetch related projects
-  const allProjects = await fetchProjects();
-  const relatedProjects = allProjects
-    .filter((p) => p.category === project.category && p.id !== project.id)
-    .slice(0, 3);
+  if (error || !project) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center text-destructive">{error || "项目不存在"}</div>
+      </div>
+    );
+  }
 
   const getCategoryName = (category: string) => {
     const names: Record<string, string> = {
-      web_development: 'Web 开发',
-      web_scraping: '网络爬虫',
-      data_analysis: '数据分析',
-      automation: '自动化',
-      machine_learning: '机器学习',
-      api_development: 'API 开发',
+      web_development: "Web 开发",
+      web_scraping: "网络爬虫",
+      data_analysis: "数据分析",
+      automation: "自动化",
+      machine_learning: "机器学习",
+      api_development: "API 开发",
     };
     return names[category] || category;
   };
 
   const getStatusName = (status: string) => {
     const names: Record<string, string> = {
-      completed: '已完成',
-      in_progress: '进行中',
-      planned: '计划中',
-      maintaining: '维护中',
-      archived: '已归档',
+      completed: "已完成",
+      in_progress: "进行中",
+      planned: "计划中",
+      maintaining: "维护中",
+      archived: "已归档",
     };
     return names[status] || status;
   };
 
   const getStatusClass = (status: string) => {
     const classes: Record<string, string> = {
-      completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-      in_progress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-      planned: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
-      maintaining: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-      archived: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+      completed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      in_progress: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+      planned: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400",
+      maintaining: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      archived: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
     };
     return classes[status] || classes.completed;
   };
@@ -92,7 +132,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         {/* Links */}
         {project.links.length > 0 && (
           <div className="flex flex-wrap gap-4 mb-8">
-            {project.links.map((link: any) => (
+            {project.links.map((link) => (
               <a
                 key={link.url}
                 href={link.url}
@@ -100,7 +140,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
-                {link.icon === 'github' ? (
+                {link.icon === "github" ? (
                   <Github className="w-4 h-4" />
                 ) : (
                   <ExternalLink className="w-4 h-4" />
@@ -115,7 +155,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-3">技术栈</h2>
           <div className="flex flex-wrap gap-2">
-            {project.technologies.map((tech: string) => (
+            {project.technologies.map((tech) => (
               <span
                 key={tech}
                 className="px-3 py-1 bg-muted text-muted-foreground rounded-md text-sm"
@@ -139,7 +179,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-3">项目亮点</h2>
             <ul className="space-y-2">
-              {project.highlights.map((highlight: string, index: number) => (
+              {project.highlights.map((highlight, index) => (
                 <li
                   key={index}
                   className="flex items-start gap-2 text-muted-foreground"
@@ -157,7 +197,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="pt-8 border-t border-border">
             <h2 className="text-xl font-semibold mb-4">相关项目</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {relatedProjects.map((relatedProject: any) => (
+              {relatedProjects.map((relatedProject) => (
                 <Link
                   key={relatedProject.id}
                   href={`/projects/${relatedProject.slug}`}

@@ -40,7 +40,29 @@ export default function HomePage() {
   if (loading || !profile) {
     return (
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
-        <div className="text-center">加载中...</div>
+        <div className="max-w-8xl mx-auto animate-pulse">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+            <div className="lg:col-span-2 space-y-10">
+              <div className="space-y-4">
+                <div className="h-8 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-full"></div>
+                <div className="h-4 bg-muted rounded w-2/3"></div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-6 bg-muted rounded w-24"></div>
+                <div className="flex flex-wrap gap-2">
+                  <div className="h-6 bg-muted rounded w-16"></div>
+                  <div className="h-6 bg-muted rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-3 space-y-4">
+              <div className="h-8 bg-muted rounded w-32"></div>
+              <div className="h-32 bg-muted rounded-lg"></div>
+              <div className="h-32 bg-muted rounded-lg"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
