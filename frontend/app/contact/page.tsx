@@ -1,13 +1,40 @@
 /**
  * Contact Page Component
  */
+"use client";
+
+import { useEffect, useState } from 'react';
 import { ContactForm } from '@/components/contact/contact-form';
 import { fetchProfile } from '@/lib/api';
+import { Profile } from '@/lib/types';
 import { Mail, MapPin, Github, Linkedin } from 'lucide-react';
 import { EmailButton } from '@/components/email-button';
 
-export default async function ContactPage() {
-  const profile = await fetchProfile();
+export default function ContactPage() {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const data = await fetchProfile();
+        setProfile(data);
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProfile();
+  }, []);
+
+  if (loading || !profile) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center">加载中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -59,7 +86,7 @@ export default async function ContactPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-4">社交媒体</h2>
                 <div className="space-y-3">
-                  {profile.social_links.map((link: any) => {
+                  {profile.social_links.map((link) => {
                     const Icon =
                       link.icon === 'github'
                         ? Github

@@ -1,19 +1,49 @@
 /**
  * Homepage Component
  */
+"use client";
+
+import { useEffect, useState } from "react";
 import { Hero } from "@/components/hero";
 import { ProjectCard } from "@/components/projects/project-card";
 import { SkillsGrid } from "@/components/skills/skills-grid";
 import { fetchProjects, fetchSkills, fetchProfile } from "@/lib/api";
+import { Project, Skill, Profile } from "@/lib/types";
 import Link from "next/link";
 
-export default async function HomePage() {
-  // Fetch featured projects and skills
-  const [projects, skills, profile] = await Promise.all([
-    fetchProjects(undefined, true),
-    fetchSkills(undefined, true),
-    fetchProfile(),
-  ]);
+export default function HomePage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [projectsData, skillsData, profileData] = await Promise.all([
+          fetchProjects(undefined, true),
+          fetchSkills(undefined, true),
+          fetchProfile(),
+        ]);
+        setProjects(projectsData);
+        setSkills(skillsData);
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading || !profile) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
+        <div className="text-center">加载中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">

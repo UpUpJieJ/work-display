@@ -1,16 +1,55 @@
 /**
  * About Page Component
  */
+"use client";
+
+import { useEffect, useState } from "react";
 import { SkillsGrid } from "@/components/skills/skills-grid";
 import { fetchProfile, fetchSkillsGrouped } from "@/lib/api";
-import { Mail, MapPin, Calendar } from "lucide-react";
+import { Profile, SkillGroup } from "@/lib/types";
+import { Mail, MapPin } from "lucide-react";
 import { EmailButton } from "@/components/email-button";
 
-export default async function AboutPage() {
-  const [profile, skillsGrouped] = await Promise.all([
-    fetchProfile(),
-    fetchSkillsGrouped(),
-  ]);
+export default function AboutPage() {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [skillsGrouped, setSkillsGrouped] = useState<SkillGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [profileData, skillsData] = await Promise.all([
+          fetchProfile(),
+          fetchSkillsGrouped(),
+        ]);
+        setProfile(profileData);
+        setSkillsGrouped(skillsData);
+      } catch (err) {
+        setError("加载数据失败");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center py-12">加载中...</div>
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center py-12 text-destructive">{error || "加载失败"}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -61,7 +100,7 @@ export default async function AboutPage() {
               <div className="pt-4 border-t border-border">
                 <h3 className="text-sm font-medium mb-3">社交媒体</h3>
                 <div className="flex flex-wrap gap-2">
-                  {profile.social_links.map((link: any) => (
+                  {profile.social_links.map((link) => (
                     <a
                       key={link.platform}
                       href={link.url}
@@ -83,7 +122,7 @@ export default async function AboutPage() {
           <div className="mb-12">
             <h2 className="text-2xl font-semibold mb-6">工作经历</h2>
             <div className="space-y-6">
-              {profile.experience.map((exp: any) => (
+              {profile.experience.map((exp) => (
                 <div
                   key={exp.id}
                   className="relative pl-6 border-l-2 border-border pb-6 last:pb-0"
@@ -103,7 +142,7 @@ export default async function AboutPage() {
                   )}
                   {exp.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {exp.technologies.map((tech: string) => (
+                      {exp.technologies.map((tech) => (
                         <span
                           key={tech}
                           className="px-2 py-1 text-xs bg-muted text-muted-foreground rounded"
@@ -124,7 +163,7 @@ export default async function AboutPage() {
           <div className="mb-12">
             <h2 className="text-2xl font-semibold mb-6">教育背景</h2>
             <div className="space-y-4">
-              {profile.education.map((edu: any) => (
+              {profile.education.map((edu) => (
                 <div
                   key={edu.id}
                   className="bg-card border border-border rounded-lg p-4"
