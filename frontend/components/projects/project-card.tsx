@@ -50,6 +50,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
     return classes[status] || classes.completed;
   };
 
+  // 确保 URL 是完整的（包含协议）
+  const getFullUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
   const handleCardClick = () => {
     router.push(`/projects/${project.slug}`);
   };
@@ -109,7 +118,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {project.links.map((link) => (
               <Link
                 key={link.url}
-                href={link.url}
+                href={getFullUrl(link.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors"

@@ -10,8 +10,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=http://backend:8000
     image: portfolio-frontend:latest
     container_name: portfolio-frontend
     ports:
@@ -52,7 +50,7 @@ services:
     mem_limit: 512m
     cpus: 0.5
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -94,7 +92,3 @@ networks:
 # Access container shell:
 #   docker-compose exec frontend sh
 #   docker-compose exec backend sh
-#
-# 注意事项：
-# - MongoDB 需要在 .env 文件中配置 MONGODB_URL 指向你的 MongoDB 实例
-# - 示例: MONGODB_URL=mongodb://your-mongodb-host:27017

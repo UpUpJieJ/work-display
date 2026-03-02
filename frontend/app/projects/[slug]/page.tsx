@@ -101,6 +101,15 @@ export default function ProjectPage() {
     return classes[status] || classes.completed;
   };
 
+  // 确保 URL 是完整的（包含协议）
+  const getFullUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -135,7 +144,7 @@ export default function ProjectPage() {
             {project.links.map((link) => (
               <a
                 key={link.url}
-                href={link.url}
+                href={getFullUrl(link.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
