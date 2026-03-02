@@ -3,12 +3,13 @@ Projects API Router
 """
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List, Optional
+from pydantic import ValidationError
 from app.models.project import Project, ProjectCategory
 from app.services.data_loader import load_projects, get_project_by_slug_async
 from app.services.data_writer import (
     insert_project,
-    update_project,
-    delete_project,
+    update_project as update_project_in_storage,
+    delete_project as delete_project_in_storage,
     list_backups,
     restore_backup,
 )
@@ -126,7 +127,7 @@ async def create_project(
 @router.put("/{project_id}", response_model=Project)
 async def update_project(
     project_id: str,
-    project: Project,
+    project: Project | dict,
     _current_user: str = Depends(get_current_user)
 ):
     """
@@ -143,11 +144,17 @@ async def update_project(
     Raises:
         HTTPException: If project not found
     """
-    project.id = project_id
-    updated = await update_project(project_id, project.model_dump())
+    if isinstance(project, dict):
+        try:
+            project_model = Project.model_validate({**project, "id": project_id})
+        except ValidationError as exc:
+            raise HTTPException(status_code=422, detail=exc.errors())
+    else:
+        project_model = project.model_copy(update={"id": project_id})
+    updated = await update_project_in_storage(project_id, project_model.model_dump())
     if not updated:
         raise HTTPException(status_code=404, detail="Project not found")
-    return project
+    return project_model
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -165,7 +172,7 @@ async def delete_project(
     Raises:
         HTTPException: If project not found
     """
-    deleted = await delete_project(project_id)
+    deleted = await delete_project_in_storage(project_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Project not found")
     return None
