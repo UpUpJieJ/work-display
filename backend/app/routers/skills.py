@@ -7,8 +7,8 @@ from app.models.skill import Skill, SkillCategory
 from app.services.data_loader import load_skills
 from app.services.data_writer import (
     insert_skill,
-    update_skill,
-    delete_skill,
+    update_skill as update_skill_in_storage,
+    delete_skill as delete_skill_in_storage,
     list_backups,
     restore_backup,
 )
@@ -154,7 +154,7 @@ async def update_skill(
     Raises:
         HTTPException: If skill not found
     """
-    updated = await update_skill(skill_name, skill.model_dump())
+    updated = await update_skill_in_storage(skill_name, skill.model_dump())
     if not updated:
         raise HTTPException(status_code=404, detail="Skill not found")
     return skill
@@ -175,7 +175,7 @@ async def delete_skill(
     Raises:
         HTTPException: If skill not found
     """
-    deleted = await delete_skill(skill_name)
+    deleted = await delete_skill_in_storage(skill_name)
     if not deleted:
         raise HTTPException(status_code=404, detail="Skill not found")
     return None

@@ -71,7 +71,7 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 后端 API 将运行在 `http://localhost:8000`
-API 文档访问 `http://localhost:8000/docs`
+API 文档访问 `http://localhost:8000/docs`（仅在 `DEBUG=True` 时启用）
 
 ### 前端启动
 

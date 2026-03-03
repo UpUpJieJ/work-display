@@ -2,11 +2,12 @@
 FastAPI Backend Application for Portfolio Website
 """
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import projects, skills, profile, contact, auth
 from app.config import settings
-from app.database import connect_to_mongo, close_mongo_connection
+from app.database import connect_to_mongo, close_mongo_connection, ping_mongo
 
 
 @asynccontextmanager
@@ -25,9 +26,9 @@ app = FastAPI(
     description="Python Developer Portfolio API",
     version="1.0.0",
     lifespan=lifespan,
-    docs_url=None,  # Disable /docs
-    redoc_url=None,  # Disable /redoc
-    openapi_url=None  # Disable OpenAPI schema
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
+    openapi_url="/openapi.json" if settings.debug else None
 )
 
 # CORS configuration - parse comma-separated origins
@@ -54,11 +55,17 @@ async def root():
     return {
         "message": "Portfolio API",
         "version": "1.0.0",
-        "docs": "/docs"
+        "docs": "/docs" if settings.debug else None
     }
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy"}
+    mongo_ok = await ping_mongo()
+    if not mongo_ok:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unhealthy", "mongodb": "unreachable"},
+        )
+    return {"status": "healthy", "mongodb": "ok"}

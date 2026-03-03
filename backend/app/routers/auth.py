@@ -2,7 +2,7 @@
 Authentication API Router
 Simple password-based authentication using JWT
 """
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from typing import Optional
@@ -10,6 +10,7 @@ import hashlib
 import hmac
 from jose import jwt
 from app.config import settings
+from app.dependencies.auth import get_current_user as get_current_user_from_token
 
 router = APIRouter()
 
@@ -130,10 +131,10 @@ async def login(request: LoginRequest):
 
 
 @router.get("/me", response_model=User)
-async def get_current_user():
+async def get_me(current_user: str = Depends(get_current_user_from_token)):
     """
     Get current authenticated user
     Note: Actual authentication should be done via dependency
     """
-    return User(username="admin")
+    return User(username=current_user)
 

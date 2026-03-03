@@ -50,6 +50,6 @@ uv sync --upgrade
 
 ## API 文档
 
-启动服务后访问：
+启动服务后访问（仅在 `DEBUG=True` 时启用）：
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`

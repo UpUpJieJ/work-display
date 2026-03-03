@@ -3,6 +3,7 @@ Contact API Router
 """
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
+import logging
 from app.models.profile import ContactSubmission
 from app.services.data_writer import save_contact_submission
 from app.dependencies.auth import get_current_user
@@ -11,6 +12,7 @@ from datetime import datetime
 from uuid import uuid4
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -30,10 +32,10 @@ async def submit_contact(submission: ContactSubmission):
     try:
         # Add metadata
         submission_data = submission.model_dump()
-        submission_data["submitted_at"] = datetime.now().isoformat()
+        submission_data["submitted_at"] = datetime.utcnow().isoformat()
         submission_data["id"] = str(uuid4())
 
-        # Save to JSON file
+        # Save to MongoDB
         success = await save_contact_submission(submission_data)
 
         if not success:
@@ -53,10 +55,11 @@ async def submit_contact(submission: ContactSubmission):
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
+        logger.exception("Failed to submit contact form")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -84,8 +87,9 @@ async def get_contact_submissions(
                 submission["_id"] = str(submission["_id"])
         
         return submissions
-    except Exception as e:
+    except Exception:
+        logger.exception("Failed to fetch contact submissions")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred: {str(e)}"
+            detail="Internal server error"
         )

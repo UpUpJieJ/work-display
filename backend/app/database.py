@@ -29,3 +29,14 @@ async def close_mongo_connection():
 def get_db():
     """Get database instance"""
     return db
+
+
+async def ping_mongo() -> bool:
+    """Check MongoDB connectivity"""
+    if client is None:
+        return False
+    try:
+        await client.admin.command("ping")
+        return True
+    except Exception:
+        return False

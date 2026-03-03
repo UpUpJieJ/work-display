@@ -2,6 +2,7 @@
 Application Configuration using Pydantic Settings
 """
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from dotenv import load_dotenv
 load_dotenv()
 class Settings(BaseSettings):
@@ -10,7 +11,7 @@ class Settings(BaseSettings):
     # App info
     app_name: str = "Portfolio API"
     app_version: str = "1.0.0"
-    debug: bool = True
+    debug: bool = False
 
     # API paths
     api_prefix: str = "/api"
@@ -30,6 +31,17 @@ class Settings(BaseSettings):
     # MongoDB Settings
     mongodb_url: str
     mongodb_database: str
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def parse_debug(cls, value):
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"release", "prod", "production"}:
+                return False
+            if normalized in {"dev", "development"}:
+                return True
+        return value
 
     class Config:
         env_file = ".env"

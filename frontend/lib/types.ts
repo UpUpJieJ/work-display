@@ -169,12 +169,12 @@ export async function fetchProjects(category?: string, featured?: boolean): Prom
   return fetchAPI<Project[]>(`/api/projects${query ? `?${query}` : ''}`);
 }
 
-export async function fetchProject(slug: string): Promise<Project | null> {
+export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
   return fetchAPI<Project>(`/api/projects/${slug}`);
 }
 
-export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
-  return fetchAPI<Project>(`/api/projects/${slug}`);
+export async function fetchProject(slug: string): Promise<Project | null> {
+  return fetchProjectBySlug(slug);
 }
 
 export async function fetchProjectCategories(): Promise<ProjectCategoryInfo[]> {
@@ -200,16 +200,13 @@ export async function fetchProfile(): Promise<Profile> {
 }
 
 // Contact API
-export async function submitContact(data: ContactFormData): Promise<void> {
+export async function submitContactForm(data: ContactFormData): Promise<void> {
   return fetchAPI<void>('/api/contact', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export async function submitContactForm(data: ContactFormData): Promise<void> {
-  return fetchAPI<void>('/api/contact', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+export async function submitContact(data: ContactFormData): Promise<void> {
+  return submitContactForm(data);
 }
